@@ -107,6 +107,61 @@ São data annotations
 [HttpPost("alunos/novo-aluno")]
 ```
 
+# Usando rotas
+
+Precisa configurar no Program.cs o `app.UseRouting();`.
+
+
+As controllers podem ter rotas definidas via Data Annotation. Ex:
+`
+[Route("minha-conta")]
+public class TesteController : Controller {}
+`
+Obs: uma controller pode ter mais de uma rota definida. Ex:
+
+`
+[Route("minha-conta")]
+[Route("gestao-da-conta")]
+public class TesteController : Controller {}
+`
+Com as duas rotas acima, podemos acessar a controller através do `minha-conta` e `gestao-da-conta`.
+
+Os endpoints dentro da controller podem receber configurações de rotas:
+
+```
+[Route("gestao-da-conta")]
+public class TesteController : Controller {
+    [Route("minha-conta/{id:int}")]
+    public ActionResult Index(){}    
+}
+```
+
+Outra forma
+
+```
+[Route("gestao-da-conta")]
+public class TesteController : Controller {
+    [HttpGet("minha-conta/{id:int}")]
+    public ActionResult Details(int id){}    
+}
+```
+
+# Recebendo parâmetros via body
+
+```
+[HttpPost("novo")]
+public ActionResult Create([Bind("Id,Nome,Email")] Aluno aluno);
+```
+
+```
+[HttpPost("novo")]
+public ActionResult Create([FromForm] Aluno aluno);
+```
+
+```
+[HttpPost("novo")]
+public ActionResult Create([FromBody] Aluno aluno);
+```
 
     
 
