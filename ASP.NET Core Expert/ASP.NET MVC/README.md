@@ -163,6 +163,36 @@ public ActionResult Create([FromForm] Aluno aluno);
 public ActionResult Create([FromBody] Aluno aluno);
 ```
 
-    
+# Action Result na prática
+
+IActionResult -> Interface;
+ActionResult -> Implementação da interface.
+
+**Recomenda-se utilizar a interface. A classe acaba sendo usada em situações mais complexas**.
+
+## Especificando qual View usar
+
+```
+public ActionResult Index(){
+    return View("NomeDaView");
+}
+```
+
+Omitir o "NomeDaView" fará com que seja buscado a view com nome Index.
+
+## Usando View com uma model
 
 
+```
+public ActionResult Index(){
+    return View("NomeDaView", new {});
+}
+```
+
+ou
+
+```
+public ActionResult Index(){
+    return View(new {  });
+}
+```
