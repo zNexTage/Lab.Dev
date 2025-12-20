@@ -82,5 +82,25 @@ namespace MVC.FormLab.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet("excluir/{id:int}")]
+        public async Task<IActionResult> Excluir(int id)
+        {
+            var aluno = await ObterAluno(id);
+
+            return View(aluno);
+        }
+
+        [HttpPost("excluir/{id:int}")]
+        [ActionName("excluir")]
+        public async Task<IActionResult> ExcluirConfirmar(int id)
+        {
+            var aluno = await ObterAluno(id);
+
+            DbContext.Alunos.Remove(aluno);
+            await DbContext.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

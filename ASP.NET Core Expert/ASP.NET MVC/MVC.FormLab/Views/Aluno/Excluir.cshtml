@@ -1,0 +1,47 @@
+﻿@model Aluno
+
+<h1> Excluir estudante </h1>
+<p>
+    Tem certeza que você deseja remover o estudante @Model.Nome?
+</p>
+
+<div>
+    <form asp-action="excluir" method="post">
+        <dl>
+            <dt>
+                @Html.DisplayNameFor(m => m.Nome)
+            </dt>
+            <dd>
+                @Html.DisplayFor(m => m.Nome)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(m => m.DataNascimento)
+            </dt>
+            <dd>
+                @Html.DisplayFor(m => m.DataNascimento)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(m => m.Email)
+            </dt>
+            <dd>
+                @Html.DisplayFor(m => m.Email)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(m => m.Ativo)
+            </dt>
+            <dd>
+                @Html.DisplayFor(m => m.Ativo)
+            </dd>
+        </dl>
+
+        <a class="btn btn-primary" asp-action="Index">
+            Voltar
+        </a>
+        <button type="submit" class="btn btn-danger">
+            Confirmar exclusão
+        </button>
+    </form>
+</div>
