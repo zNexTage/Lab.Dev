@@ -17,6 +17,8 @@ namespace MVC.FormLab.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
+            ViewBag.Sucesso = "Olá!";
+
             var alunos = await DbContext.Alunos.ToListAsync();
             return View(alunos);
         }
@@ -58,7 +60,7 @@ namespace MVC.FormLab.Controllers
         [HttpGet("editar/{id:int}")]
         public async Task<IActionResult> Editar(int id)
         {
-            var aluno = await ObterAluno(id);
+            var aluno = await ObterAluno(id);            
 
             return View(aluno);
         }
@@ -79,6 +81,10 @@ namespace MVC.FormLab.Controllers
 
             DbContext.Alunos.Update(aluno);
             await DbContext.SaveChangesAsync();
+
+            // TempData sobrevive a Redirect e pode ser usado depois.
+            // ViewData ou ViewBag não iria funcionar nesse cenário.
+            TempData["Sucesso"] = $"Estudante {aluno.Nome} atualizado com sucesso";
 
             return RedirectToAction(nameof(Index));
         }

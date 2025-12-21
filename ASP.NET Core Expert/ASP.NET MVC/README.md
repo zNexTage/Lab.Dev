@@ -564,3 +564,30 @@ No Razor, podemos utilizar a seguinte sintaxe para trabalhar com vários ambient
 Gera código prontos para ajudar na produtividade.
 
 Não se esqueça: não faz sentido perder produtividade com algo que existe para te ajudar na produtividade.
+
+# Manutenção de estado
+
+Os itens abaixo permitem passar dados da Controller para a View. 
+
+- ViewBag;
+- ViewData;
+- TempData
+
+## ViewBag e ViewData
+
+Fazem a mesma coisa. A diferença é o tipo de cada um. ViewBag permite atribuição usando notação ponto
+e ViewData notação colchetes.
+
+- Dados de curto tempo de duração;
+- Duração de apenas um request;
+- Após lidas perdem o conteúdo
+
+## TempData
+
+- Dura mais de um request;
+- Assemelha-se a uma sessão (section);
+    - Guardando os dados na memória do servidor;
+    - Não é indicado.
+- Após lidas perdem o conteúdo;
+- Perduram enquanto não forem lidas.
+
