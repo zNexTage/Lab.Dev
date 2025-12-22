@@ -64,3 +64,9 @@ Um componente é um Template (HTML). Um template possui uma classe e a classe po
 
 Componente = Template + Class + Metadado.
 
+## Configurando o ambiente
+
+- Precisa ter instalado o Node e o NPM;
+- Instalar o Angular CLI;
+    - `npm install -g @angular/cli`
+
