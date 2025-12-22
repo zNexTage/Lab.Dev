@@ -52,4 +52,15 @@ As versões estão saindo a cada 6 meses.
 | Beta | Em fase de desenvolvimento e testes. É identificável como por ex: "10.0.0-beta.0". |
 | Release Candidate | Desenvolvimento completo e em testes finais. É identificável como por ex: "10.1.10-rc". | 
 
+## Anatomia de uma App Angular
+
+- Trabalha com componentes;
+    Uma aplicação é uma composição de componentes.
+- Cria-se serviços (services) para se comunicar com o mundo externo;+
+
+### Angular é baseado em componentes
+
+Um componente é um Template (HTML). Um template possui uma classe e a classe possui Metadados.
+
+Componente = Template + Class + Metadado.
 
