@@ -644,4 +644,62 @@ Clicar com o botão direito em cima de lib, ir em Add e depois vá na opção Ad
 @using SeuNamespace
 @addTagHelpers *, Microsoft.AspNetCore.Mvc.TagHelpers
 ```
-    
+
+## Ferramentas de bundling e minification 
+
+Bundling -> Transformar vários arquivos em um único arquivo. Dessa forma, o browser em vez de baixar vários arquivos, baixa apenas um, trazendo agilidade no carregamento do site.
+
+Minification -> Remoção de excessos (espaço em branco, comentários, etc...) dos arquivos para reduzir o tamanho.
+
+### Configurando no Visual Studio
+
+- Baixar a extensão Bundler & Minifier (criado por Jason Moore) no Visual Studio.
+    - `dotnet add package BuildBundlerMinifier` (Via linha de comando);
+- Criar o arquivo `bundleconfig.json` na raiz do projeto;
+- Exemplo de configuração que pode ser colocada no arquivo `bundleconfig.json`:
+```
+    [
+  {
+    "outputFileName": "wwwroot/css/site.min.css",
+    "inputFiles": [
+      "wwwroot/lib/bootstrap/css/bootstrap.css",
+      "wwwroot/css/site.css"
+    ]
+  },
+  {
+    "outputFileName": "wwwroot/css/site.min.js",
+    "inputFiles": [
+      "wwwroot/js/site.js",
+      "wwwroot/js/mat.js"
+    ],
+    "minify": {
+      "enabled": true,
+      "renameLocals": true
+    },
+    "sourceMap": false
+  }
+]
+```
+- Feito isso, basta clicar com o botão direito em cima de `bundleconfig.json`, procurar a opção `Bundler & Minifier` e clicar em `Update`.
+
+Obs:  O `"renameLocals": true` altera os nomes das variáveis para nomes menores.
+`"sourceMap": false` é para debug. Precisa ser true para debugar.
+
+**Cuidado com variáveis com nomes iguais**;
+**Não minificar bibliotecas externas. Foi utilizado no exemplo apenas para demonstração**.
+
+#### Usando minificação apenas em prod
+
+Utilizar o seguinte trecho:
+
+
+```
+<environment include="Development">
+    <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+</environment>
+
+<environment exclude="Development">
+    <link rel="stylesheet" href="~/css/site.min.css" />
+</environment>
+```
