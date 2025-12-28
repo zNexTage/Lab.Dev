@@ -73,8 +73,12 @@ Componente = Template + Class + Metadado.
 
 ## Componentes
 
-No Angular, todo componente possui a seguinte declaração:
+Um componente possui um classe Typescript, um template em HTML e estilização em CSS.
 
+- O comportamento do componente é definido na classe typescript;
+
+
+No Angular, todo componente possui a seguinte declaração:
 ```
 import { Component } from '@angular/core';
 
@@ -89,11 +93,130 @@ export class ComponenteTeste {
 }
 ```
 
+Pode-se utilizar `template` no lugar do `templateUrl` e `styles` no lugar de `styleUrl`. Exemplo:
+```
+import { Component, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  //templateUrl: './app.html',
+  template: `Hello Universe`,
+  styles: `
+    :host {
+      color: blue;
+    }
+  `,
+})
+export class App {
+  protected readonly title = signal('LearnAngular');
+}
+
+```
+
 ### Criando componente
 
 Rodar o comando: `ng generate component ComponenteTeste`;
 - Versão abreviada: `ng g c NomeComponente`
 
+
+### Utilizando variáveis dentro de um componente
+
+Declarando e utilizando variável (variável city):
+```
+import { Component, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-root',
+  //templateUrl: './app.html',
+  template: `Hello {{city}}`, // Usando a variável aqui
+  styles: `
+    :host {
+      color: #a144eb;
+    }
+  `,
+})
+export class App {
+  protected readonly title = signal('LearnAngular');
+  city:string = "São Paulo"; // Declarando a variável aqui
+}
+```
+
+### Selector
+
+O `selector` passado no decorator nos permite especificar como o componente será invocado.
+
+Ex:
+
+```
+@Component({
+  selector: 'app-user',
+  template: ` Username: {{ username }} `,
+})
+export class User {
+  username = 'Private Ryan';
+}
+```
+
+O componente acima deve ser chamado da seguinte forma:
+```
+<app-user />
+```
+
+Obs: sempre que chamar um componente em outro componente é preciso coloca-lo na propriedade `imports`:
+
+```
+import { Component, signal } from '@angular/core';
+
+@Component({
+  selector: 'app-user',
+  template: ` Username: {{ username }} `,
+})
+export class User {
+  username = 'Private Ryan';
+}
+
+@Component({
+  selector: 'app-root',
+  imports: [User], // Importando o componente User para poder utilizar <app-user />
+  //templateUrl: './app.html',
+  template: `
+  Hello {{city}}, {{currentDate}}
+  <br />
+  <app-user />
+  `,
+  styles: `
+    :host {
+      color: #a144eb;
+    }
+  `,
+})
+export class App {
+  protected readonly title = signal('LearnAngular');
+  city:string = "São Paulo";
+  currentDate:string = new Date().toDateString();
+}
+```
+
+### Condicionais
+
+Utiliza-se o `@if`. Exemplo dentro do template:
+
+
+```
+ template: ` 
+    @if(isLoggedIn){
+      <p>
+        Username: {{ username }}
+      </p>
+    } @else {
+      <p>
+        Welcome back, friend!
+      </p>
+    }  
+  `,
+```
+
+O `@` é um sintaxe especial do Angular.
 
 ## Módulo
 
@@ -123,3 +246,5 @@ export class FuncionalidadeModule { }
 ## Services
 
 Comando: `ng g service Servico`
+
+**Parei em: https://angular.dev/tutorials/learn-angular/4-control-flow-if**
