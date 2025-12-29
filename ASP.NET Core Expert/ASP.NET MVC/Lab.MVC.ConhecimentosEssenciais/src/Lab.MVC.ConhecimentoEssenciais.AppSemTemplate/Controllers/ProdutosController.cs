@@ -8,8 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Lab.MVC.AppSemTemplate.Data;
 using Lab.MVC.AppSemTemplate.Models;
 
-namespace Lab.MVC.AppSemTemplate
+namespace Lab.MVC.AppSemTemplate.Controllers
 {
+    [Route("meus-produtos")]
     public class ProdutosController : Controller
     {
         private readonly AppDbContext _context;
@@ -25,6 +26,7 @@ namespace Lab.MVC.AppSemTemplate
             return View(await _context.Produto.ToListAsync());
         }
 
+        [HttpGet("detalhes/{id:int}")]
         // GET: Produtos/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -43,6 +45,7 @@ namespace Lab.MVC.AppSemTemplate
             return View(produto);
         }
 
+        [HttpGet("criar")]
         // GET: Produtos/Create
         public IActionResult Create()
         {
@@ -52,7 +55,7 @@ namespace Lab.MVC.AppSemTemplate
         // POST: Produtos/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost("criar")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Image,Valor")] Produto produto)
         {
@@ -65,6 +68,7 @@ namespace Lab.MVC.AppSemTemplate
             return View(produto);
         }
 
+        [HttpGet("editar/{id:int}")]
         // GET: Produtos/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -84,7 +88,7 @@ namespace Lab.MVC.AppSemTemplate
         // POST: Produtos/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
+        [HttpPost("editar/{id:int}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Image,Valor")] Produto produto)
         {
@@ -116,6 +120,7 @@ namespace Lab.MVC.AppSemTemplate
             return View(produto);
         }
 
+        [HttpGet("excluir/{id:int}")]
         // GET: Produtos/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -135,7 +140,7 @@ namespace Lab.MVC.AppSemTemplate
         }
 
         // POST: Produtos/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost("excluir/{id:int}"), ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

@@ -1,4 +1,5 @@
 ﻿using Lab.MVC.AppSemTemplate.Data;
+using Lab.MVC.AppSemTemplate.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,7 +8,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddControllersWithViews(); // Configuração mais simples que o AddMVC
 
+//builder.Services.AddRouting(options =>
+//{
+//    options.ConstraintMap["slugify"] = typeof(RouteSlugifyParameterTransformer);
+//});
+
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 
 var app = builder.Build();
 
@@ -15,6 +22,16 @@ var app = builder.Build();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+//app.MapControllerRoute(
+//    name: "blog",
+//    pattern: "blog/{controller=Home}/{action=Index}/{id?}"
+//);
+
+//app.MapControllerRoute(
+//    name: "default",
+//    pattern: "{controller:slugify=Home}/{action:slugify=Index}/{id?}"
+//);
 
 app.MapControllerRoute(
     name: "default",

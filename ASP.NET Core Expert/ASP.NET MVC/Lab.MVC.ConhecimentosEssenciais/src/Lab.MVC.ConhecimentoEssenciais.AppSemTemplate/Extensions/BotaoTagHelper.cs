@@ -7,10 +7,12 @@ namespace Lab.MVC.AppSemTemplate.Extensions
     public class BotaoTagHelper : TagHelper
     {
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly LinkGenerator _linkGenerator;
 
-        public BotaoTagHelper(IHttpContextAccessor contextAccessor)
+        public BotaoTagHelper(IHttpContextAccessor contextAccessor, LinkGenerator link)
         {
             _contextAccessor = contextAccessor;
+            _linkGenerator = link;
         }
 
 
@@ -54,9 +56,17 @@ namespace Lab.MVC.AppSemTemplate.Extensions
             }
 
             var controller = _contextAccessor.HttpContext?.GetRouteData().Values["controller"]?.ToString();
+            var host = $"{_contextAccessor.HttpContext.Request.Scheme}://{_contextAccessor.HttpContext.Request.Host.Value}";
+
+            var caminho = _linkGenerator.GetPathByAction(
+                _contextAccessor.HttpContext,
+                nomeAction,
+                controller,
+                values: new { id = RouteId }
+            );
 
             output.TagName = "a";
-            output.Attributes.SetAttribute("href", $"{controller}/{nomeAction}/{RouteId}");
+            output.Attributes.SetAttribute("href", $"{host}{caminho}");
             output.Attributes.SetAttribute("class", nomeClasse);
 
             var iconSpan = new TagBuilder("span");

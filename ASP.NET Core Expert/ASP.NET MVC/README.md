@@ -93,7 +93,9 @@ No ASP.NET MVC um Action Result é o tipo de retorno da action da controller, é
 - ...;
 
 
-# Attribute Routes
+# Rotas
+
+## Attribute Routes
 
 Rota por atributos é uma maneira alternativa de trabalhar com rotas, são muito mais flexíveis e fáceis de personalizar.
 Estas rotas valem paenas a Controller que foi implementada.
@@ -107,7 +109,7 @@ São data annotations
 [HttpPost("alunos/novo-aluno")]
 ```
 
-# Usando rotas
+## Usando rotas
 
 Precisa configurar no Program.cs o `app.UseRouting();`.
 
@@ -146,7 +148,7 @@ public class TesteController : Controller {
 }
 ```
 
-# Recebendo parâmetros via body
+## Recebendo parâmetros via body
 
 ```
 [HttpPost("novo")]
@@ -164,6 +166,58 @@ public ActionResult Create([FromForm] Aluno aluno);
 [HttpPost("novo")]
 public ActionResult Create([FromBody] Aluno aluno);
 ```
+
+## Roteamento avançado
+
+### Ordem de configuração
+
+Da mais complexa para a mais simples. O .NET vai testar uma por uma até consegui encontrar a respectiva rota. Logo, se a mais simples é a primeira, o .NET pode acabar utilizando ela em vez da sua customizada (complexa).
+
+**Um uso para o exemplo abaixo é com idiomas.**
+
+```
+app.MapControllerRoute(
+    name: "blog",
+    pattern: "blog/{controller=Home}/{action=Index}/{id?}"
+);
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
+```
+
+
+
+
+
+
+
+
+
+
+### Transformadores de rota
+É possível aplicar uma transformação no nome de uma rota.
+
+- Criar uma classe que herde de `IOutboundParameterTransformer`;
+- Implementar método `public string? TransformOutbound(object? value)`;
+- Configurar em program para utilizar a classe:
+```
+builder.Services.AddRouting(options =>
+{
+    options.ConstraintMap["ChaveRota"] = typeof(MinhaClasse);
+});
+```
+- **Importante: A chave usada em ConstraintMap (ChaveRota) deve ser especifica nas configurações de rota. Ver exemplo abaixo: **
+- Especificar as rotas que vão usar a configuração:
+```
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller:ChaveRota=Home}/{action:ChaveRota=Index}/{id?}"
+);
+```
+- **Importante: observe onde foi colocado a chave definida em ConstraintMap (ChaveRota). É preciso fazer essa configuração para o .NET aplicar o transformador.**
+
 
 # Action Result na prática
 
