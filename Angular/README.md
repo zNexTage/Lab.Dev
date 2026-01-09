@@ -113,6 +113,30 @@ export class App {
 
 ```
 
+**Idealmente, podemos utilizar o componente raíz para configurar uma navbar para realizar navegação.**
+**Ex:**
+```
+import {Component} from '@angular/core';
+import {RouterOutlet} from '@angular/router';
+
+@Component({
+  selector: 'app-root',
+  template: `
+    <nav>
+      <a href="/">Home</a>
+      |
+      <a href="/user">User</a>
+    </nav>
+    <router-outlet />
+  `,
+  imports: [RouterOutlet],
+})
+export class App {}
+```
+
+Obs: toda vez que for clicado em um link, ele será renderizado no lugar de `<router-outlet />`.
+
+
 ### Criando componente
 
 Rodar o comando: `ng generate component ComponenteTeste`;
@@ -465,6 +489,26 @@ import { CommonModule } from '@angular/common';
   ]
 })
 export class FuncionalidadeModule { }
+```
+
+## Rotas
+
+Para configurar rotas é necessário acessar o arquivo `app.rotes.ts` e estruturar conforme exemplo abaixo:
+
+Arquivo: `app.rotes.ts`
+```
+export const routes: Routes = [
+    {
+        path: '',
+        title: "Home",
+        component: App
+    },
+    {
+        path: 'user',
+        title: "Usuários",
+        component: User
+    }
+];
 ```
 
 ## Services

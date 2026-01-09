@@ -1,44 +1,21 @@
 import { Component, input, signal } from '@angular/core';
 import { Child } from './child/child';
 import { NgOptimizedImage } from '@angular/common';
+import { RouterLink, RouterOutlet } from '@angular/router';
 
 @Component({
-  selector: 'app-user',
-  imports: [NgOptimizedImage],
-  template: ` 
-    @if(isLoggedIn){
-      <img ngSrc="https://ew.com/thmb/hXirYe4etmhfJbmU5dL9d0tXF3c=/2000x0/filters:no_upscale():max_bytes(150000):strip_icc()/saving-private-ryan-matt-damon-060524-1-27570d4206364916891172e478add38c.jpg" alt="Angular logo" width="250" height="250" />
-      <p>
-        Username: {{ username }} - Occupation: {{occupation()}}
-      </p>      
-    } @else {
-      <p>
-        Welcome back, friend!
-      </p>
-    }
-  
-  `,
-})
-export class User {
-  username = 'Private Ryan';
-  isLoggedIn = true;
-  occupation = input<string>();
-}
-
-@Component({
-  selector: 'app-root',
-  imports: [User, Child],
-  //templateUrl: './app.html',
+  selector: 'app-home',
+   imports: [Child],  
   template: `
-  <span>
+   <span>
     Hello {{city}}, {{currentDate}}
   </span>
   <br />
-  <app-user [occupation]="occupation" />
+  <!-- <app-user [occupation]="occupation" /> -->
 
-  <button (click)="changeOccupation('Angular Developer')">
+  <!-- <button (click)="changeOccupation('Angular Developer')">
       Change occupation to Angular Developer
-  </button>
+  </button> -->
 
   <ul>
   @for(os of operatingSystens; track os.id){
@@ -73,10 +50,11 @@ export class User {
     :host {
       color: #a144eb;
     }
-  `,
+  
+  `
 })
-export class App {
-  protected readonly title = signal('LearnAngular');
+export class Home {
+protected readonly title = signal('LearnAngular');
   city: string = "São Paulo";
   currentDate: string = new Date().toDateString();
   operatingSystens: Array<{ id: string, name: string }> = [
@@ -96,7 +74,7 @@ export class App {
   isDivEditable: boolean = false;
 
   message:string = "";
-  occupation:string ="Soldier";
+  //occupation:string ="Soldier";
 
   greet() {
     alert("Hello, there!");
@@ -110,11 +88,50 @@ export class App {
     this.message = "";
   }
 
-  changeOccupation(newOccupation:string){
-    this.occupation = newOccupation;
-  }
+  // changeOccupation(newOccupation:string){
+  //   this.occupation = newOccupation;
+  // }
 
   onCount(count:number){
     console.log(count);
   }
+}
+
+@Component({
+  selector: 'app-user',
+  imports: [NgOptimizedImage],
+  template: ` 
+    @if(isLoggedIn){
+      <img ngSrc="https://ew.com/thmb/hXirYe4etmhfJbmU5dL9d0tXF3c=/2000x0/filters:no_upscale():max_bytes(150000):strip_icc()/saving-private-ryan-matt-damon-060524-1-27570d4206364916891172e478add38c.jpg" alt="Angular logo" width="250" height="250" />
+      <p>
+        Username: {{ username }} - Occupation: {{occupation()}}
+      </p>      
+    } @else {
+      <p>
+        Welcome back, friend!
+      </p>
+    }
+  
+  `,
+})
+export class User {
+  username = 'Private Ryan';
+  isLoggedIn = true;
+  occupation = input<string>();
+}
+
+@Component({
+  selector: 'app-root',
+  imports: [RouterLink, RouterOutlet],
+  //templateUrl: './app.html',
+  template: `
+   <nav>
+      <a routerLink="/user">Usuários</a> | 
+      <a routerLink="/">Home</a>
+    </nav>
+     <router-outlet />
+  `,
+})
+export class App {
+  
 }
