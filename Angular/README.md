@@ -569,8 +569,22 @@ handleSubmit() {
 }
 ```
 
+## Validando formulários
 
+Importe o módulo de validação:
+`import {ReactiveFormsModule, Validators} from '@angular/forms';`
 
+O `Validators` pode ser usado para validar campo no formulário. Exemplo:
+```
+profileForm = new FormGroup({
+  name: new FormControl('', Validators.required),
+  email: new FormControl('', [Validators.required, Validators.email]),
+});
+```
+No exemplo acima é definido que `name` será obrigatório; o campo `email` deve estar formatado corretamente e não pode ser nulo.
+
+Para saber se o formulário está valido, basta acessar a propriedade `valid` da instância do `FormGroup`.
+`<button type="submit" [disabled]="!profileForm.valid">Submit</button>`
 
 ## Services
 
