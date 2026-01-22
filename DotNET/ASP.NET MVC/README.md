@@ -796,3 +796,15 @@ Utilizar o seguinte trecho:
  ```
 
  No exemplo acima, o .NET irá procurar por módulos em vez de `Areas`.
+
+# Injeção de dependência (DI)
+
+## Visão geral
+
+- DI é um padrão de projeto que ajuda a reduzir o acoplamento de código em sua aplicação;
+- No contexto do ASP.NET Core, DI é usada para adicionar serviços e gerenciar a vida útil dos objetos;
+- ASP.NET Core possui um contêiner de injeção de dependência integrado;
+    - O Contêiner é responsável por entregar os objetos instânciados;
+- Para que um serviço seja injetado no código é necessário registrá-lo ao contêiner de DI.
+`builder.Services.AddScope<ApplicationDbContext>`
+- Para usar o serviço registrado é de costume injetar este serviço via construtor;
