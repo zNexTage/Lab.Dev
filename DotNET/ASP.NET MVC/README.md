@@ -930,3 +930,180 @@ O Identity possui Scaffolding das áreas, incluindo a de login. Com isso, é pos
 
 Uma vez que o Identity foi configurado, é possível obter informações do usuário logado através do HttpContext:
 `HttpContext.Identity.User`
+
+## Autorização
+
+A autorização pode ser feita através do DataAnnotation `Authorize` que pode ser colocado em cima do controller.
+
+```
+[Authorize]
+public class AccountController : Controller
+{
+    public ActionResult Login()
+    {
+    }
+
+    public ActionResult Logout()
+    {
+    }
+}
+```
+
+Na configuração acima, todas as `Actions` da controller exigem que o usuário esteja logado. Contudo, é possível aplicar essa configuração para uma ou mais `Action`.
+
+```
+public class AccountController : Controller
+{
+   public ActionResult Login()
+   {
+   }
+
+   [Authorize]
+   public ActionResult Logout()
+   {
+   }
+}
+```
+
+No exemplo acima, apenas usuários logados podem invocar o método `logout`.
+
+Pode-se, também, aplicar uma configuração que exige autorização para todas as actions e liberar o acesso para algumas:
+```c#
+[Authorize]
+public class AccountController : Controller
+{
+    [AllowAnonymous]
+    public ActionResult Login()
+    {
+    }
+
+    public ActionResult Logout()
+    {
+    }
+}
+```
+
+**Obs: o annotation [Authorize] não pode ser aplicado em Razor pages.**
+
+No exemplo acima, a configuração `[AllowAnonymous]` sobrescreve o `[Authorize]` para o método `Login` fazendo com que o método seja acessível por todos.
+
+**Aplicar o `[AllowAnonymous]` a nível do controller fará com que as actions com `[Authorize]` sejam ignoradas.**
+
+### Policies
+Uma política consiste em um ou mais requerimentos. 
+Políticas permitem agrupar regras, facilitando, por exemplo, liberar/barrar ações. 
+
+Como configurar:
+```c#
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AtLeast21", policy =>
+        policy.Requirements.Add(new MinimumAgeRequirement(21)));
+});
+```
+
+Uma vez configurada, pode-se usar da seguinte forma:
+
+```c#
+[Authorize(Policy = "AtLeast21")]
+public class AtLeast21Controller : Controller
+{
+    public IActionResult Index() => View();
+}
+```
+
+É possível aplicar políticas a nível da controller e das actions:
+
+```
+[Authorize(Policy = "AtLeast21")]
+public class AtLeast21Controller2 : Controller
+{
+    [Authorize(Policy = "IdentificationValidated")]
+    public IActionResult Index() => View();
+}
+```
+
+**Todas as políticas precisam ser atendidas para o acesso ser liberado**
+
+**Em Razor pages, políticas devem ser colocadas a nível de página (Page) e não a nível de handler.**
+
+### Role
+Acesso baseado em papel. Pode-se configurar o `Authorize` para liberar o acesso de acordo com o papel da pessoa no sistema.
+
+Configuração base:
+```c#
+builder.Services.AddDefaultIdentity<IdentityUser>( ... )
+    .AddRoles<IdentityRole>()
+    ...
+```
+
+```
+[Authorize(Roles = "Administrator")]
+public class AdministrationController : Controller
+{
+    public IActionResult Index() =>
+        Content("Administrator");
+}
+```
+
+É possível configurar mais de uma role
+```
+[Authorize(Roles = "HRManager,Finance")]
+public class SalaryController : Controller
+{
+    public IActionResult Payslip() =>
+                    Content("HRManager || Finance");
+}
+```
+
+No exemplo acima, o usuário deve ser `HRManager` ou `Finance`
+
+```c#
+[Authorize(Roles = "PowerUser")]
+[Authorize(Roles = "ControlPanelUser")]
+public class ControlPanelController : Controller
+{
+    public IActionResult Index() =>
+        Content("PowerUser && ControlPanelUser");
+}
+```
+
+No exemplo acima, o usuário deve ser `PowerUser` e `ControlPanelUser`.
+
+
+```c#
+[Authorize(Roles = "Administrator, PowerUser")]
+public class ControlAllPanelController : Controller
+{
+    public IActionResult SetTime() =>
+        Content("Administrator || PowerUser");
+
+    [Authorize(Roles = "Administrator")]
+    public IActionResult ShutDown() =>
+        Content("Administrator only");
+}
+```
+
+- `SetTime` -> pode ser acessado por `Administrator` ou `PowerUser`;
+- `ShutDown` -> pode ser acessado por `Administrator` apenas.
+
+
+
+### Claims
+
+Claims são como ações.
+
+Configurando uma claim
+
+```c#
+builder.Services.AddAuthorization(opt => {
+    opt.AddPolicy("NOME_POLITICA", policy => {
+        policy.RequireClaim("Produtos", "VI");
+    });
+});
+```
+# Referências
+
+- https://learn.microsoft.com/en-us/aspnet/core/security/authorization/simple?view=aspnetcore-10.0
+- https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-10.0
+- https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-10.0
