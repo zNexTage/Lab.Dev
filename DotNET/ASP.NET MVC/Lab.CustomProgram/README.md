@@ -187,15 +187,6 @@ app.MapControllerRoute(
 );
 ```
 
-
-
-
-
-
-
-
-
-
 ### Transformadores de rota
 É possível aplicar uma transformação no nome de uma rota.
 
@@ -1107,6 +1098,37 @@ builder.Services.AddAuthorization(opt => {
 ```
 
 **claim vira motivo de “não autorizado” quando ela é usada como requisito de policy**
+
+# Customizando a Program.cs
+
+## Program.cs mais organizada
+
+Idealmente, as configurações dentro da program devem ficar em arquivos isolados. Isso pode ser feito através de Extension Methods
+
+Ex:
+```
+public static class MvcConfig
+    {
+        public static WebApplicationBuilder AddMvcConfiguration(this WebApplicationBuilder builder) {
+            builder.Services.AddControllersWithViews(opt =>
+            {
+                opt.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            });
+
+            builder.Services.AddHsts(opts =>
+            {
+                opts.Preload = true;
+                opts.IncludeSubDomains = true;
+                opts.MaxAge = TimeSpan.FromDays(60);
+            });
+            
+            return builder;
+        }
+    }
+```
+
+Na Program.cs basta fazer:
+`builder.AddMvcConfiguration();`
 
 # Referências
 
