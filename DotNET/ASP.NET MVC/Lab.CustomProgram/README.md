@@ -1130,6 +1130,50 @@ public static class MvcConfig
 Na Program.cs basta fazer:
 `builder.AddMvcConfiguration();`
 
+# Configurando o ambiente
+
+Em `launchSettings.json` podemos configurar as variáveis e os ambientes que vamos rodar as aplicações. Podemos ter algo como:
+
+```
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Development": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:7014;http://localhost:5296",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:7014;http://localhost:5296",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
+    }
+  }
+}
+
+```
+
+Da até para validar ambiente dentro de views, como:
+
+```
+<enviroment include="Development">
+</enviroment>
+
+<enviroment exclude="Development">
+</enviroment>
+```
+
+Neste exemplo, tudo que está dentro de `include` será carregado desde que o ambiente seja `Development` e tudo que está dentro de
+`exclude` será desconsiderado se o ambiente for `Development`.
+
 # Referências
 
 - https://learn.microsoft.com/en-us/aspnet/core/security/authorization/simple?view=aspnetcore-10.0
