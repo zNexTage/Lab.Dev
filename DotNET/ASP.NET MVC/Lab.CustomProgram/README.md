@@ -1174,6 +1174,57 @@ Da até para validar ambiente dentro de views, como:
 Neste exemplo, tudo que está dentro de `include` será carregado desde que o ambiente seja `Development` e tudo que está dentro de
 `exclude` será desconsiderado se o ambiente for `Development`.
 
+# Lendo configurações
+
+Cada configuração colocada no `appsettings.json` pode ser acessada durante o código.
+
+## Ex 1
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "ApiConfiguration": {
+    "Domain": "https://minhaapi.com",
+    "UserKey": "MinhaChave",
+    "UserSecret": "MinhaChave"
+  }
+}
+````
+Tendo a estrutura `ApiConfiguration` pode-se criar uma classe que contenham as propriedades `Domain`, `UserKey` e `UserSecret`.
+Uma vez que a classe é criada é possíve carregar os valores da seguinte forma:
+
+```json
+var apiConfig = new ApiConfiguration();
+
+_configuration.GetSection(ApiConfiguration.ConfigName).Bind(apiConfig);
+```
+
+`_configuration` é do tipo `IConfiguration`.
+## Ex 2
+Uma outra forma é fazer a segunte configuração:
+
+`builder.Services.Configure<ApiConfiguration>(builder.Configuration.GetSection(ApiConfiguration.ConfigName));`
+
+Feito isso é possível acessar as configurações da seguinte forma:
+
+```
+public class HomeController : Controller
+{
+    private readonly ApiConfiguration _apiConfiguration;
+
+    public HomeController(IOptions<ApiConfiguration> apiConfiguration) {
+        _apiConfiguration = apiConfiguration;
+    }
+}
+```
+
+Feito a injeção, basta acessar o  `_apiConfiguration`.
+
+
 # Referências
 
 - https://learn.microsoft.com/en-us/aspnet/core/security/authorization/simple?view=aspnetcore-10.0

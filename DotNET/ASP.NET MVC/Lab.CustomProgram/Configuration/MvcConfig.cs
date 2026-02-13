@@ -23,6 +23,8 @@ namespace Lab.CustomProgram.Configuration
                 opts.IncludeSubDomains = true;
                 opts.MaxAge = TimeSpan.FromDays(60);
             });
+
+            builder.Services.Configure<ApiConfiguration>(builder.Configuration.GetSection(ApiConfiguration.ConfigName));
             
             return builder;
         }
