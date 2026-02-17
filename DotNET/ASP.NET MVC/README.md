@@ -1108,6 +1108,59 @@ builder.Services.AddAuthorization(opt => {
 
 **claim vira motivo de “não autorizado” quando ela é usada como requisito de policy**
 
+# Protegendo dados com User Secrets
+
+Clique em cima do projeto e procure por "Manage user secrets". Será criado/aberto um arquivo `secrets.json`. 
+`secrets.json` fica na máquina do dev e não é versionada.
+
+`User secrets` tem prioridade em cima do `appsettings.json`.
+
+Se tiver a configuração:
+
+```c#
+            builder
+                .Configuration
+                .SetBasePath(builder.Environment.ContentRootPath)
+                .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
+                .AddEnvironmentVariables();
+```
+
+será necessário acrescentar a seguinte linha:
+
+```c#
+            builder
+                .Configuration
+                .SetBasePath(builder.Environment.ContentRootPath)
+                .AddJsonFile("appsettings.json", true, true)
+                .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
+                .AddEnvironmentVariables()
+                .AddUserSecrets(Assembly.GetExecutingAssembly(), true);
+``` 
+
+## Via linha de comando
+
+Comando: `dotnet user-secrets init`
+
+### Adicionado dado via linha de comando
+
+Comando: `dotnet user-secrets set "MinhaAPI:SecretApiKey" "123456"`
+
+### listando via linha de comando
+Comando: `dotnet user-secrets list`
+
+## Obtendo valores (funciona para appsettings.json também)
+
+Pode-se obter os valores e joga-los em um objeto, basta fazer a seguinte declaração:
+```c#
+var apiConfig = new ApiConfiguration();
+
+builder
+    .Configuration
+    .GetSection("NomeDaSecao")
+    .Bind(apiConfig);
+```
+
 # Referências
 
 - https://learn.microsoft.com/en-us/aspnet/core/security/authorization/simple?view=aspnetcore-10.0
