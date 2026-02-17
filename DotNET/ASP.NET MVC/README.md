@@ -1161,6 +1161,50 @@ builder
     .Bind(apiConfig);
 ```
 
+# Tratamento de erros
+
+Para ambiente de desenvolvimento podemos usar a configuração:
+`app.UseDeveloperExceptionPage();`
+
+Para produção, por exemplo, podemos utilizar:
+`app.UseExceptionHandler("/Erro/500");` 
+
+O código acima redireciona para a controller `Home` e invoca a rota `Erro`.
+
+```c#
+class HomeController : BaseController {
+    [Route("Erro/{id:length(3,3)}")] // o id precisa ter 3 caracteres
+    public IActionResult Errors(){
+        var modelErro = new ErrorViewModel(); // Precisa criar esse modelo
+
+        if(id == 500) {
+            modelErro.Mensagem = "Ocorreu um erro! Tente novamente mais tarde ou contate o administrador.";
+            modelErro.Titulo ="Ocorreu um erro!";
+            modelErro.ErroCode = id;
+        }
+        else if(id == 404) {
+            ...
+        }
+        
+        return View("Error", modelErro); //Necessário criar a view Error
+    }
+}
+```
+
+## Tratando outros erros
+Ao configurar a `Action Errors` (ver exemplo anterior), podemos utiliza-la para tratar erros:
+
+`app.UseStatusCodePagesWithRedirects("/Erro/{0}");`
+
+O `{0}` é o status code que é passado na URL.
+
+Na prática ficaria:
+
+```c#
+app.UseExceptionHandler("/Erro/500");
+app.UseStatusCodePagesWithRedirects("/Erro/{0}");
+```
+
 # Referências
 
 - https://learn.microsoft.com/en-us/aspnet/core/security/authorization/simple?view=aspnetcore-10.0
