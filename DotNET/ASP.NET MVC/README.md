@@ -1205,6 +1205,21 @@ app.UseExceptionHandler("/Erro/500");
 app.UseStatusCodePagesWithRedirects("/Erro/{0}");
 ```
 
+# Realizando log de tudo
+
+Recomendação: elmah.io (https://elmah.io/) - Ferramenta para log (não é gratuita).
+
+# Trabalhando com filtros
+
+Deve-se criar uma classe que implementa `IActionFilter`. Deverá ser implementado os métodos `OnActionExecuted` e `OnActionExecuting`.
+
+Depois, deve-se adicionar a classe criada como um filtro:
+```
+builder.Services.AddControllersWithViews(options => {
+    options.Filters.Add(typeof(MeuFiltro));
+});
+```
+
 # Referências
 
 - https://learn.microsoft.com/en-us/aspnet/core/security/authorization/simple?view=aspnetcore-10.0
