@@ -38,6 +38,8 @@ namespace Lab.CustomProgram.Configuration
                 app.UseHsts();
             }
 
+            app.UseGlobalizationConfig();
+
             app.UseHttpsRedirection();
             app.UseRouting();
 

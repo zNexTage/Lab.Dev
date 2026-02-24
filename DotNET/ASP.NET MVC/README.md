@@ -1220,6 +1220,42 @@ builder.Services.AddControllersWithViews(options => {
 });
 ```
 
+# Globalização da aplicação
+
+Globalização - A aplicação é suportada em diversas linguagens e regiões;
+Localização - Processo para customizar uma aplicação globalizadas para linguagens e regiões especificas
+Internacionalização - combinação de globalização e localização.
+
+## Configuração de exemplo
+
+Aplicação de exemplo: Lab.CustomProgram
+
+Configura a aplicação para trabalhar com uma cultura fixada
+```
+public static class GlobalizationConfig
+{
+    public static WebApplication UseGlobalizationConfig(this WebApplication app) {
+        var defaultCulture = new CultureInfo("pt-BR");
+
+        var localization = new RequestLocalizationOptions
+        {
+            DefaultRequestCulture = new Microsoft.AspNetCore.Localization.RequestCulture(defaultCulture),
+            SupportedCultures = new[] { defaultCulture },
+            SupportedUICultures = new[] { defaultCulture }
+        };
+
+        // Define a cultura e não deixa o browser definir.
+        app.UseRequestLocalization(localization);
+        
+        return app;
+    }
+}
+```
+
+Depois é só invocar:
+`app.UseGlobalizationConfig();`
+
+
 # Referências
 
 - https://learn.microsoft.com/en-us/aspnet/core/security/authorization/simple?view=aspnetcore-10.0
