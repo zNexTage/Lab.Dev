@@ -1,38 +1,52 @@
 ﻿using Lab.DesenvTools.Console;
+using Lab.DesenvTools.Console.Tree;
 
-var trie = new TrieNode();
+var tree = new TreeExample();
 
-List<List<string>> queries =
-[
-    ["add", "hack"],
-    ["add", "hackerrank"],
-    ["find", "hac"],
-    ["find", "hak"],
-];
+tree.Run();
 
-var result = new List<int>();
+/*-------------*/
 
-queries.ForEach(q => {
-    var command = q[0];
-    var item = q[1];
+//var m = new RunningMedian();
 
-    if (command == "add")
-    {
-        trie.Insert(item);
-    }
-    else if (command == "find")
-    {
-        var node = trie.GetNode(item);
+//var nums = new List<int>() { 12, 4, 5, 3, 8, 7 };
 
-        if (node is null)
-        {
-            result.Add(0);
-            return;
-        }
+//m.Median(nums);
+/*-------------*/
 
-        result.Add(node.Count);
-    }
-});
+//var trie = new TrieNode();
 
-Console.WriteLine($"[{string.Join(", ", result)}]");
-Console.ReadLine();
+//List<List<string>> queries =
+//[
+//    ["add", "hack"],
+//    ["add", "hackerrank"],
+//    ["find", "hac"],
+//    ["find", "hak"],
+//];
+
+//var result = new List<int>();
+
+//queries.ForEach(q => {
+//    var command = q[0];
+//    var item = q[1];
+
+//    if (command == "add")
+//    {
+//        trie.Insert(item);
+//    }
+//    else if (command == "find")
+//    {
+//        var node = trie.GetNode(item);
+
+//        if (node is null)
+//        {
+//            result.Add(0);
+//            return;
+//        }
+
+//        result.Add(node.Count);
+//    }
+//});
+
+//Console.WriteLine($"[{string.Join(", ", result)}]");
+//Console.ReadLine();
