@@ -48,17 +48,13 @@ namespace Lab.DesenvTools.Console.Tree
 
         private void PreOrderPrint(Node<T> node)
         {
+            if (node is null) return;
+
             PrintNode(node);
 
-            if (node.Left is not null)
-            {
-                PreOrderPrint(node.Left);
-            }
+            PreOrderPrint(node.Left);
 
-            if (node.Right is not null)
-            {
-                PreOrderPrint(node.Right);
-            }
+            PreOrderPrint(node.Right);
         }
 
         private void OrderPrint(Node<T> node)
@@ -237,7 +233,7 @@ namespace Lab.DesenvTools.Console.Tree
 
             //tree.Remove(id);
 
-            tree.PostOrder();
+            tree.PreOrder();
         }
     }
 }
