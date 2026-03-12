@@ -1255,6 +1255,15 @@ public static class GlobalizationConfig
 Depois é só invocar:
 `app.UseGlobalizationConfig();`
 
+## Validação com globalização
+
+Dentro de `AddControllersWithViews` podemos colocar os seguintes itens:
+
+```
+options.ModelBindingMessageProvider.[NOME_PROPRIEDADE]
+```
+ModelBindingMessageProvider possui diversas propriedades que podemos utilizar para customizar mensagens.
+
 
 # Referências
 
