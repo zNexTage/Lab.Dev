@@ -103,3 +103,4 @@ node_modules
 .angular
 dist
 .vs
+/DotNET/ASP.NET MVC/Lab.MVC.ConhecimentosEssenciais/src/Lab.MVC.ConhecimentoEssenciais.AppSemTemplate/wwwroot/images
