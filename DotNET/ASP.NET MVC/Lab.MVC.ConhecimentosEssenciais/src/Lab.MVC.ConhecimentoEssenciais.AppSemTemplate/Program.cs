@@ -17,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'AppDbContext' not found.")));
 
+builder.Services.AddResponseCaching();
+
 builder.Services.AddControllersWithViews(); // Configuração mais simples que o AddMVC
 
 //builder.Services.AddRouting(options =>
@@ -28,6 +30,8 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 
 var app = builder.Build();
+
+app.UseResponseCaching();
 
 // Permite olhar a pasta wwwroot
 app.UseStaticFiles();

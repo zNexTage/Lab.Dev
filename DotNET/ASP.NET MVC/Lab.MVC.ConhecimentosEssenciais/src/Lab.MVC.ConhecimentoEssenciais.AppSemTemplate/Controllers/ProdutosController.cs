@@ -16,8 +16,11 @@ namespace Lab.MVC.AppSemTemplate.Controllers
         }
 
         // GET: Produtos
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, NoStore = false)]
         public async Task<IActionResult> Index()
         {
+            ViewData["Horario"] = DateTime.Now;
+
             return View(await _context.Produto.ToListAsync());
         }
 
