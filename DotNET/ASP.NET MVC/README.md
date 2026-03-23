@@ -1347,6 +1347,25 @@ app.UseCookiePolicy();
 ```
 O código acima verifica se o usuário consentiu com o uso de cookies.
 
+# Estendendo funcionalidades do Razor com Tag Helper
+
+É possível alterar o comportamento de elementos utilizando os tag helpers. Para isso, podemos:
+
+Obs: podemos encontrar um exemplo do caso no projeto `Lab.MVC.ConhecimentoEssenciais`.
+
+1. Criar uma classe que herda de `TagHelper`;
+    `public class DesabilitaLinkClaimTagHelper : TagHelper`
+2. Além disso, podemos especificar quais elementos esse TagHelper pode trabalhar e quais atributos através de DataAnnotations:
+```
+[HtmlTargetElement("*", Attributes = "disable-by-claim-name")]
+[HtmlTargetElement("*", Attributes = "disable-by-claim-value")]
+public class DesabilitaLinkClaimTagHelper : TagHelper {}
+```
+3. Por fim, sobrescreva o método `Process`.
+```
+    public override void Process(TagHelperContext context, TagHelperOutput output) {}
+```
+
 # Referências
 
 - https://learn.microsoft.com/en-us/aspnet/core/security/authorization/simple?view=aspnetcore-10.0

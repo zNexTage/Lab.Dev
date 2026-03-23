@@ -44,7 +44,7 @@
             <td>
                  <botao tipo-botao="Detalhes" route-id="@item.Id"></botao>
                  <botao tipo-botao="Editar" route-id="@item.Id"></botao>
-                 <botao tipo-botao="Excluir" route-id="@item.Id"></botao>
+                 <botao disable-by-claim-name="Produtos" disable-by-claim-value="EX" tipo-botao="Excluir" route-id="@item.Id"></botao>
                 @* <a asp-action="Edit" class="btn btn-warning" asp-route-id="@item.Id">
                     <span class="fa fa-pencil-alt"></span></a>
                 <a asp-action="Details" class="btn btn-info" asp-route-id="@item.Id">
