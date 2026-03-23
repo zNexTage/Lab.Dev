@@ -1264,6 +1264,88 @@ options.ModelBindingMessageProvider.[NOME_PROPRIEDADE]
 ```
 ModelBindingMessageProvider possui diversas propriedades que podemos utilizar para customizar mensagens.
 
+# Trabalhando com cookies
+
+## Definido um cookie
+
+Para incluir um cookie em uma requisição basta utilizar o seguinte comando:
+```c#
+var opts = new CookieOptions() {
+    Expires = DateTime.Now.AddHours(1)
+};
+
+Response.Cookies.Append("NOME_COOKIE", "VALOR_COOKIE", opts);
+```
+
+## Lendo um cookie
+
+A forma mais segura é utilizando o comando:
+```c#
+Request.Cookies.TryGetValue("NOME_COOKIE", out string? cookieValue)
+```
+contudo, é possível acessar através do comando:
+```c#
+var meuCookie = Request.Cookies["NOME_COOKIE"];
+```
+
+## Cookie de consentimento
+
+É muito comum os sites apresentarem uma notificação para aceitar o uso de cookies. O .NET
+possui um recurso nativo para a utilização dessa notificação.
+
+### Configuração base
+
+Configurando o serviço:
+```c#
+builder.Services.Configure<CookiePolicyOptions>(opts =>
+{
+    opts.CheckConsentNeeded = context => true;
+    opts.MinimumSameSitePolicy = SameSiteMode.None;
+    opts.ConsentCookieValue = "true"; // Grava true quando o usuário consentir.
+});
+```
+
+Configurando o uso do serviço:
+```c#
+app.UseCookiePolicy();
+```
+
+### Utilizando cookie de consentimento 
+
+1. Crie uma partial view. No projeto `Lab.MVC.ConhecimentoEssenciais` foi criado a partial `_CookieConsentPartial.cshtml`;
+2. Inclua o `@using Microsoft.AspNetCore.Http.Features`;
+3. Defina o bloco: 
+```c#
+@{
+    var consentFeature = Context.Features.Get<ITrackingConsentFeature>();
+    var showBanner = !consentFeature?.CanTrack ?? false;
+    var cookieString = consentFeature.CreateConsentCookie();
+}
+
+@if(showBanner) {
+    <div id="cookieConsent" class="alert alert-warning alert-dismissible fade show" role="alert">
+        Use this space to summarize your privacy and cookie use policy. <a asp-page="/Privacy">Learn more</a>
+
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close" data-cookie-string="@cookieString">
+            <span aria-hidden="true">Accept</span>
+        </button>
+    </div>
+    <script>
+        (function() {
+            var button = document.querySelector("#cookieConsent button[data-cookie-string]");
+
+            button.addEventListener("click", (e) => {
+                document.cookie = button.dataset.cookieString;
+
+                 $("#cookieConsent").fadeOut("slow", function(){
+                    $(this).remove();
+                });
+            }, false);
+        })();
+    </script>
+}
+```
+O código acima verifica se o usuário consentiu com o uso de cookies.
 
 # Referências
 

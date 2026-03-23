@@ -21,6 +21,14 @@ builder.Services.AddResponseCaching();
 
 builder.Services.AddControllersWithViews(); // Configuração mais simples que o AddMVC
 
+
+builder.Services.Configure<CookiePolicyOptions>(opts =>
+{
+    opts.CheckConsentNeeded = context => true;
+    opts.MinimumSameSitePolicy = SameSiteMode.None;
+    opts.ConsentCookieValue = "true"; // Grava true quando o usuário consentir.
+});
+
 //builder.Services.AddRouting(options =>
 //{
 //    options.ConstraintMap["slugify"] = typeof(RouteSlugifyParameterTransformer);
@@ -35,6 +43,8 @@ app.UseResponseCaching();
 
 // Permite olhar a pasta wwwroot
 app.UseStaticFiles();
+
+app.UseCookiePolicy();
 
 app.UseRouting();
 
