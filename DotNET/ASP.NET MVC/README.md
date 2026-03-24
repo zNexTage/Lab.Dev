@@ -1377,6 +1377,26 @@ utilizar o `IServiceScopeFactory` para criar uma instância de um `DbContext`, p
     - `IHostedService` é a interface base para hosted services. Utilize este contrato caso precise de um controle mais refinado.    
     - `BackgroundService` encapsula as lógica e apresenta uma forma mais amigável de trabalhar com tarefas assíncronas.
 
+# Testes
+
+## Ferramental
+
+- xUnit.net
+    - Coordena testes de unidade;
+    - Escritos pelos criadores do NUnit;
+    - Compatível com o Visual Studio;
+    - Utilizado pelo time de desenvolvimento do .NET Core e
+    ASP.NET;
+    - Instalação: `Install-Package xunit`;
+    - Para reconhecimento do Visual Studio: `Install-Package xunit.runner.visualstudio`
+- Moq
+    - Realize Mock com facilidade;
+    - Compatível com o Visual Studio;
+    - Utilizado pelo time de desenvolvimento do .NET Core e
+    ASP.NET;
+    - Instalação: `Install-Package Moq`;
+
+
 ## Como configurar?
 
 1. Crie uma classe que herda de `BackgroundService`;
