@@ -1366,10 +1366,32 @@ public class DesabilitaLinkClaimTagHelper : TagHelper {}
     public override void Process(TagHelperContext context, TagHelperOutput output) {}
 ```
 
+# Hosted Services
+
+Hosted services consiste em um código que é executado em `background` no instante que a aplicação .NET (API, MVC, etc) é iniciada,
+permitindo realizar ações sem atrapalhar o fluxo principal da aplicação.
+Por padrão, esse tipo de serviço é `Singleton`. Logo, "[...] você não pode injetar scoped services diretamente." (6). Sendo assim, deve-se
+utilizar o `IServiceScopeFactory` para criar uma instância de um `DbContext`, por exemplo.
+
+- `BackgroundService` implementação de `IHostedService`;
+    - `IHostedService` é a interface base para hosted services. Utilize este contrato caso precise de um controle mais refinado.    
+    - `BackgroundService` encapsula as lógica e apresenta uma forma mais amigável de trabalhar com tarefas assíncronas.
+
+## Como configurar?
+
+1. Crie uma classe que herda de `BackgroundService`;
+    Ex: `public class HostedExampleService : BackgroundService`;
+2. Sobrescreva o método `ExecuteAsync`
+    Ex: `protected override async Task ExecuteAsync(CancellationToken stoppingToken) {}`
+3. Para o `ExecuteAsync` é necessário definir um loop infinito para que o código execute até que haja uma chamada para encerra-lo:
+    Ex: `while (!stoppingToken.IsCancellationRequested) {}` - Nesse cenário, `stoppingToken.IsCancellationRequested` será `true` quando a aplicação encerrar.
+4. O `await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);` é útil para aplicar um delay na execução e não deixar o código rodando frenéticamente.
+
 # Referências
 
-- https://learn.microsoft.com/en-us/aspnet/core/security/authorization/simple?view=aspnetcore-10.0
-- https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-10.0
-- https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-10.0
-- https://pt.stackoverflow.com/questions/16316/asp-net-identity-e-claims
-- https://learn.microsoft.com/en-us/archive/blogs/alikl/windows-identity-foundation-wif-by-example-part-iii-how-to-implement-claims-based-authorization-for-asp-net-application
+1. https://learn.microsoft.com/en-us/aspnet/core/security/authorization/simple?view=aspnetcore-10.0
+2. https://learn.microsoft.com/en-us/aspnet/core/security/authorization/policies?view=aspnetcore-10.0
+3. https://learn.microsoft.com/en-us/aspnet/core/security/authorization/roles?view=aspnetcore-10.0
+4. https://pt.stackoverflow.com/questions/16316/asp-net-identity-e-claims
+5. https://learn.microsoft.com/en-us/archive/blogs/alikl/windows-identity-foundation-wif-by-example-part-iii-how-to-implement-claims-based-authorization-for-asp-net-application
+6. https://desenvolvedor.io/blog/implementando-background-services-e-hosted-services-no-dotnet
