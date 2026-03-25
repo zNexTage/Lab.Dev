@@ -1377,6 +1377,17 @@ utilizar o `IServiceScopeFactory` para criar uma instância de um `DbContext`, p
     - `IHostedService` é a interface base para hosted services. Utilize este contrato caso precise de um controle mais refinado.    
     - `BackgroundService` encapsula as lógica e apresenta uma forma mais amigável de trabalhar com tarefas assíncronas.
 
+## Como configurar?
+
+1. Crie uma classe que herda de `BackgroundService`;
+    Ex: `public class HostedExampleService : BackgroundService`;
+2. Sobrescreva o método `ExecuteAsync`
+    Ex: `protected override async Task ExecuteAsync(CancellationToken stoppingToken) {}`
+3. Para o `ExecuteAsync` é necessário definir um loop infinito para que o código execute até que haja uma chamada para encerra-lo:
+    Ex: `while (!stoppingToken.IsCancellationRequested) {}` - Nesse cenário, `stoppingToken.IsCancellationRequested` será `true` quando a aplicação encerrar.
+4. O `await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);` é útil para aplicar um delay na execução e não deixar o código rodando frenéticamente.
+
+
 # Testes
 
 ## Ferramental
@@ -1396,16 +1407,56 @@ utilizar o `IServiceScopeFactory` para criar uma instância de um `DbContext`, p
     ASP.NET;
     - Instalação: `Install-Package Moq`;
 
+## Criando mocks
 
-## Como configurar?
+## DbContext
 
-1. Crie uma classe que herda de `BackgroundService`;
-    Ex: `public class HostedExampleService : BackgroundService`;
-2. Sobrescreva o método `ExecuteAsync`
-    Ex: `protected override async Task ExecuteAsync(CancellationToken stoppingToken) {}`
-3. Para o `ExecuteAsync` é necessário definir um loop infinito para que o código execute até que haja uma chamada para encerra-lo:
-    Ex: `while (!stoppingToken.IsCancellationRequested) {}` - Nesse cenário, `stoppingToken.IsCancellationRequested` será `true` quando a aplicação encerrar.
-4. O `await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);` é útil para aplicar um delay na execução e não deixar o código rodando frenéticamente.
+Para mockar o DbContext podemos fazer o seguinte:
+
+```c#
+var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+
+var ctx = new AppDbContext(options);
+```
+
+Com o código acima é possível fazer o seguinte:
+
+```c#
+ctx.Produto.Add(new Models.Produto() { Id = 1, Name = "Prod 1", Valor = 10m });
+ctx.Produto.Add(new Models.Produto() { Id = 2, Name = "Prod 2", Valor = 10m });
+ctx.Produto.Add(new Models.Produto() { Id = 3, Name = "Prod 3", Valor = 10m });
+ctx.SaveChanges();
+```
+
+## Identity
+
+Para mockar o Identity e simular um usuário logado, por exemplo, podemos fazer o seguinte:
+
+```c#
+var mockClaims = new Mock<ClaimsIdentity>();
+            mockClaims
+                .Setup(m => m.Name)
+                .Returns("teste@email.com");
+
+var principal = new ClaimsPrincipal(mockClaims.Object);
+
+var mockContext = new Mock<HttpContext>();
+
+mockContext
+    .Setup(c => c.User)
+    .Returns(principal);
+
+var controller = new ProdutosController(ctx)
+{
+    ControllerContext = new ControllerContext
+    {
+        HttpContext = mockContext.Object
+    }
+};
+```
+
 
 # Referências
 

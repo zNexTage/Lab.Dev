@@ -19,6 +19,8 @@ namespace Lab.MVC.AppSemTemplate.Controllers
         [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Any, NoStore = false)]
         public async Task<IActionResult> Index()
         {
+            var user = HttpContext.User.Identity;
+
             ViewData["Horario"] = DateTime.Now;
 
             return View(await _context.Produto.ToListAsync());
