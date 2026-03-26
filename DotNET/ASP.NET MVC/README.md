@@ -1457,6 +1457,74 @@ var controller = new ProdutosController(ctx)
 };
 ```
 
+## Teste de upload de arquivo
+
+Para este tipo de teste recomenda-se criar uma interface e uma classe especializada em salvar o arquivo em um diretório, storage, etc. Uma vez que
+essa classe é criada, é necessário mocka-la para que se possa realizar os testes unitários. No contexto de testes unitários,
+não é necessário validar se o arquivo foi de fato salvo em algum local. Essa verificação é realizada em testes de integração.
+
+Ex:
+
+```c#
+public interface IImageUploadService
+{
+    public Task<Tuple<bool, string>> UploadArquivo(IFormFile arquivo, string prefixo);
+}
+```
+
+```c#
+public class ImageUploadService : IImageUploadService {}
+```
+
+```c#
+private readonly AppDbContext _context;
+private readonly IImageUploadService _imageUploadService;
+
+public ProdutosController(AppDbContext context, IImageUploadService imageUploadService)
+{
+    _context = context;
+    _imageUploadService = imageUploadService;
+}
+```
+
+Uma vez feito o código acima, fica fácil mockar um `IImageUploadService` nos testes.
+
+Ex:
+
+```c#
+// Arrange
+var options = new DbContextOptionsBuilder<AppDbContext>()
+    .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+    .Options;
+
+var ctx = new AppDbContext(options);
+
+//IFormFile
+var fileMock = new Mock<IFormFile>();
+var content = "Dados do seu arquivo fake (mock)";
+var fileName = "test.jpg";
+
+var ms = new MemoryStream();
+var writter = new StreamWriter(ms);
+writter.Write(content);
+writter.Flush();
+ms.Position = 0;
+
+fileMock.Setup(_ => _.FileName).Returns(fileName);
+fileMock.Setup(_ => _.Length).Returns(ms.Length);
+fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
+fileMock.Setup(_ => _.ContentDisposition).Returns($"inline; filename={fileName}");
+            
+// Img service
+var imgService = new Mock<IImageUploadService>();
+imgService
+    .Setup(i =>
+    i.UploadArquivo(fileMock.Object,
+    It.IsAny<string>()))
+    .ReturnsAsync(Tuple.Create(true, ""));
+
+var controller = new ProdutosController(ctx, imgService.Object);
+```
 
 # Referências
 

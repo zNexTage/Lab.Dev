@@ -1,6 +1,7 @@
 ﻿using Lab.MVC.AppSemTemplate.Data;
 using Lab.MVC.AppSemTemplate.Extensions;
 using Lab.MVC.AppSemTemplate.Services;
+using Lab.MVC.AppSemTemplate.Services.Contracts;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,6 +40,8 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 // Inicia a execução no momento que a aplicação é iniciada.
 builder.Services.AddHostedService<HostedExampleService>();
+
+builder.Services.AddScoped<IImageUploadService, ImageUploadService>();
 
 var app = builder.Build();
 

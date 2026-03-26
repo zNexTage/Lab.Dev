@@ -1,5 +1,7 @@
 ﻿using Lab.MVC.AppSemTemplate.Controllers;
 using Lab.MVC.AppSemTemplate.Data;
+using Lab.MVC.AppSemTemplate.Models;
+using Lab.MVC.AppSemTemplate.Services.Contracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -56,7 +58,31 @@ namespace Lab.MVC.AppSemTemplate.UnitTests
                 .Setup(c => c.User)
                 .Returns(principal);
 
-            var controller = new ProdutosController(ctx)
+            //IFormFile
+            var fileMock = new Mock<IFormFile>();
+            var content = "Dados do seu arquivo fake (mock)";
+            var fileName = "test.jpg";
+
+            var ms = new MemoryStream();
+            var writter = new StreamWriter(ms);
+            writter.Write(content);
+            writter.Flush();
+            ms.Position = 0;
+
+            fileMock.Setup(_ => _.FileName).Returns(fileName);
+            fileMock.Setup(_ => _.Length).Returns(ms.Length);
+            fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
+            fileMock.Setup(_ => _.ContentDisposition).Returns($"inline; filename={fileName}");
+
+            // Img service
+            var imgService = new Mock<IImageUploadService>();
+            imgService
+                .Setup(i =>
+                i.UploadArquivo(fileMock.Object,
+                It.IsAny<string>()))
+                .ReturnsAsync(Tuple.Create(true, ""));
+
+            var controller = new ProdutosController(ctx, imgService.Object)
             {
                 ControllerContext = new ControllerContext
                 {
@@ -69,6 +95,58 @@ namespace Lab.MVC.AppSemTemplate.UnitTests
 
             // Assert
             Assert.IsType<ViewResult>(result);
+        }
+
+        [Fact]
+        public async void ProdutosController_Create_Sucesso()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+
+            var ctx = new AppDbContext(options);
+
+            //IFormFile
+            var fileMock = new Mock<IFormFile>();
+            var content = "Dados do seu arquivo fake (mock)";
+            var fileName = "test.jpg";
+
+            var ms = new MemoryStream();
+            var writter = new StreamWriter(ms);
+            writter.Write(content);
+            writter.Flush();
+            ms.Position = 0;
+
+            fileMock.Setup(_ => _.FileName).Returns(fileName);
+            fileMock.Setup(_ => _.Length).Returns(ms.Length);
+            fileMock.Setup(_ => _.OpenReadStream()).Returns(ms);
+            fileMock.Setup(_ => _.ContentDisposition).Returns($"inline; filename={fileName}");
+            
+            // Img service
+            var imgService = new Mock<IImageUploadService>();
+            imgService
+                .Setup(i =>
+                i.UploadArquivo(fileMock.Object,
+                It.IsAny<string>()))
+                .ReturnsAsync(Tuple.Create(true, ""));
+
+            var controller = new ProdutosController(ctx, imgService.Object);
+
+            Produto produto = new Produto()
+            {
+                Id = 1,
+                Name = "test",
+                Valor = 10m,
+                Upload = fileMock.Object,
+                Image = string.Empty
+            };
+
+            // Act
+            var result = await controller.Create(produto);
+
+            // Assert
+            Assert.IsType<RedirectToActionResult>(result);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Lab.MVC.AppSemTemplate.Data;
 using Lab.MVC.AppSemTemplate.Models;
+using Lab.MVC.AppSemTemplate.Services.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,10 +10,12 @@ namespace Lab.MVC.AppSemTemplate.Controllers
     public class ProdutosController : Controller
     {
         private readonly AppDbContext _context;
+        private readonly IImageUploadService _imageUploadService;
 
-        public ProdutosController(AppDbContext context)
+        public ProdutosController(AppDbContext context, IImageUploadService imageUploadService)
         {
             _context = context;
+            _imageUploadService = imageUploadService;
         }
 
         // GET: Produtos
@@ -61,7 +64,7 @@ namespace Lab.MVC.AppSemTemplate.Controllers
         {
             if (ModelState.IsValid)
             {
-                (var resultado, var nomeArquivo) = await UploadArquivo(produto.Upload, Guid.NewGuid().ToString());
+                (var resultado, var nomeArquivo) = await _imageUploadService.UploadArquivo(produto.Upload, Guid.NewGuid().ToString());
 
                 if(!resultado)
                 {
@@ -119,7 +122,7 @@ namespace Lab.MVC.AppSemTemplate.Controllers
 
                 if (produto.Upload != null)
                 {
-                    (var resultado, var nomeArquivo) = await UploadArquivo(produto.Upload, Guid.NewGuid().ToString());
+                    (var resultado, var nomeArquivo) = await _imageUploadService.UploadArquivo(produto.Upload, Guid.NewGuid().ToString());
                     
                     if(!resultado)
                     {
@@ -185,18 +188,6 @@ namespace Lab.MVC.AppSemTemplate.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private async Task<Tuple<bool, string>> UploadArquivo(IFormFile arquivo, string prefixo)
-        {
-            if (arquivo == null || arquivo.Length <= 0) return Tuple.Create(false, string.Empty);
-
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", $"{prefixo}{arquivo.FileName}");
-
-            using var stream = new FileStream(path, FileMode.Create);
-            await arquivo.CopyToAsync(stream);
-
-            return Tuple.Create(true, path);
         }
 
         private bool ProdutoExists(int id)
