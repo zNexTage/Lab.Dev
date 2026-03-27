@@ -1650,7 +1650,7 @@ Por fim, após todas as configurações, podemos rodar a aplicação através do
     - Porta 35000 aponta para a porta 8080 dentro do contâiner.
 - `-v` especifica um volume (diretório) que a aplicação acessará.
 
-### Observações
+#### Observações
 
 - HTTPS
     - As configurações para se rodar com HTTPs estão no `Dockerfile` acima. Contudo, a utilização de um entidade de certificação
@@ -1666,6 +1666,24 @@ Por fim, após todas as configurações, podemos rodar a aplicação através do
             .PersistKeysToFileSystem(new DirectoryInfo(@"/var/data_protection_keys/"))
             .SetApplicationName("MinhaAPPMVC");
     ```
+
+### IIS
+
+- Necessário instalar o IIS no computador através dos 
+painel de recursos do computador;
+- Necessário instalar o `Hosting Bundle`;
+
+Realizar o publish da aplicação;
+Opte por Web Deploy
+    - Defina que o server é localhost;
+    - Defina o nome do site;
+É possível utilizar a opção de colocar os arquivos em uma pasta
+e depois jogar no IIS;
+Pode ser necessário definir a variável `ASPNETCORE_ENVIRONMENT`. Se for o caso,
+rode no terminal 
+```sh
+setx ASPNETCORE_ENVIRONMENT "Production" /M
+```
 
     
     
