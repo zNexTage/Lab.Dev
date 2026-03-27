@@ -1525,6 +1525,25 @@ imgService
 
 var controller = new ProdutosController(ctx, imgService.Object);
 ```
+# Deploy
+
+## Self-hosting
+
+Instalando o `dotnet-watch`
+
+`dotnet tool install --global dotnet-watch`
+
+Essa ferramenta permite acompanhar a execução da aplicação.
+
+depois é possível acessar o diretório da aplicação e rodar
+`dotnet watch run`. Basicamente, esse comando permite rodar a aplicação
+com `hot reload` ativo.
+
+É possível estabelecer o perfil (ambiente) de execução através do comando:
+`dotnet watch run --launch-profile production`.
+
+Não deve ser utilizado para propósito de expor a aplicação.
+
 
 # Referências
 
