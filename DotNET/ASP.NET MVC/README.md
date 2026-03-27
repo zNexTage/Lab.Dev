@@ -1685,9 +1685,20 @@ rode no terminal
 setx ASPNETCORE_ENVIRONMENT "Production" /M
 ```
 
-    
-    
+### Deploy na Nuvem (Azure)
 
+Deploy usando web app + database.
+
+- Após criar os recuros na Azure, deve-se baixar o publish profile;
+    - Transferir o arquivo baixado para a solução;
+- Vá em publish e crie um novo perfil usando o publish profile;
+- A connection string do banco de dados pode ser obtido no Azure;
+- Talvez seja necessário acessar o portal da Azure, ir em `Configuration`,
+criar a chave `WEBSITE_WEBDEPLOY_USE_SCM` e definir seu valor para `False`;
+    - Depois, faça o reset do publish profile pelo portal da Azure e baixe novamente;
+- No portal da Azure, em `Configuration`, crie uma chave para a connection string
+com o nome usado no ambiente de desenvolvimento;
+    - Faça o mesmo para definir o `ASPNETCORE_ENVIROMENT`
 
 # Referências
 
