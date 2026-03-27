@@ -1544,6 +1544,132 @@ com `hot reload` ativo.
 
 Não deve ser utilizado para propósito de expor a aplicação.
 
+## Docker
+
+Clique em cima da aplicação, procure por `Add` ou `Adicionar`,
+clique em `Docker Support` e escolha o SO linux.
+
+Fazendo isso, o próprio Visual Studio irá configurar o Docker. Será gerado um
+`DockerFile` e será adicionado um ambiente novo em 
+`launchsettings.json`.
+
+Contudo, será necessário realizar ajustes no `Dockerfile`,
+pois o Visual Studio configura de forma equivocada
+os diretórios da aplicação. Na prática, o `Dockerfile` deve
+ficar com esse formato:
+
+```dockerfile
+# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+
+# This stage is used when running from VS in fast mode (Default for Debug configuration)
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+# USER $APP_UID
+WORKDIR /app
+EXPOSE 8080
+EXPOSE 443
+
+# This stage is used to build the service project
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+COPY ["Lab.MVC.AppSemTemplate.csproj", "Lab.MVC.ConhecimentoEssenciais.AppSemTemplate/"]
+RUN dotnet restore "Lab.MVC.ConhecimentoEssenciais.AppSemTemplate/Lab.MVC.AppSemTemplate.csproj"
+WORKDIR "Lab.MVC.ConhecimentoEssenciais.AppSemTemplate"
+COPY . .
+RUN dotnet build "Lab.MVC.AppSemTemplate.csproj" -c $BUILD_CONFIGURATION -o /app/build
+
+RUN mkdir -p /root/.aspnet/https && chmod 777 /root/.aspnet/https
+
+# Rodando com HTTPs
+RUN dotnet dev-certs https -ep /root/.aspnet/https/aspnetapp.pfx -p Teste@123
+RUN dotnet dev-certs https --trust
+
+RUN chmod 777 /root/.aspnet/https/aspnetapp.pfx
+
+# This stage is used to publish the service project to be copied to the final stage
+FROM build AS publish
+ARG BUILD_CONFIGURATION=Release
+
+# Rodando com HTTPs
+COPY --from=build /root/.aspnet/https/aspnetapp.pfx /root/.aspnet/https/
+
+RUN dotnet publish "Lab.MVC.AppSemTemplate.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+FROM base AS final
+WORKDIR /app
+
+# Rodando com HTTPs
+COPY --from=publish /app/publish .
+COPY --from=publish /root/.aspnet/https/aspnetapp.pfx /root/.aspnet/https/
+
+ENV ASPNETCORE_ENVIRONMENT="Docker"
+
+# o contâiner pode acessar o volume abaixo.
+VOLUME /var/data_protection_keys 
+
+# Rodando com HTTPs
+ENV ASPNETCORE_URLS="https://+:443;https://+:8080;"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Password="Teste@123"
+ENV ASPNETCORE_Kestrel__Certificates__Default__Path="/root/.aspnet/https/aspnetapp.pfx"
+
+ENTRYPOINT ["dotnet", "Lab.MVC.AppSemTemplate.dll"]
+```
+
+O próximo passo é criar a imagem através do comando:
+`docker build -t NOME_DA_IMAGEM_DA_APP .`
+
+Depois, basta rodar `docker run NOME_DA_IMAGEM_DA_APP` para inicializar
+a aplicação.
+
+Porém, se a aplicação consome uma base de dados é necessário subir esse banco de dados dentro do contâiner. Para isso,
+é necessário algumas etapas.
+
+### Criando uma rede para app e banco de dados
+
+Comando: `docker network create minha-rede`
+
+Após, rode o comando abaixo para baixar a imagem do SQL Server:
+
+```c#
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Teste@123" -p 1433:1433 --network minha-rede --name docker-sql --hostname docker-sql -d mcr.microsoft.com/mssql/server:2022-latest
+```
+
+Feito isso, será necessário criar um `appsettings` específico para o docker. 
+Ex: `appsettings.Docker.json`.
+
+Lembrando que o `.Docker.` se trata do ambiente, logo precisa definir o valor da variável `ASPNETCORE_ENVIRONMENT` para `Docker`. 
+Isso deve ser feito no Dockerfile. No exemplo acima, essa configuração já foi inserida.
+
+Por fim, após todas as configurações, podemos rodar a aplicação através do comando:
+`docker run --network minha-rede -p 36000:443 -p 35000:8080 -v /var/data_protection_keys app-mvc`
+
+- `--network` - define a rede a ser usada
+- `-p` define as portas
+    - Porta 36000 aponta para a porta 443 dentro do contâiner. 
+    - Porta 35000 aponta para a porta 8080 dentro do contâiner.
+- `-v` especifica um volume (diretório) que a aplicação acessará.
+
+### Observações
+
+- HTTPS
+    - As configurações para se rodar com HTTPs estão no `Dockerfile` acima. Contudo, a utilização de um entidade de certificação
+    para validar um certificado não foi utilizado no exemplo.
+- Volume para chaves de tokens (ex: Antiforegy):
+    - Se uma aplicação roda em vários containers, é necessário configurar um diretório único para armazenar as chaves de tokens Antiforegy. Isso é necessário,
+    pois se aplicação gera um token Antiforegy a partir do servidor A, um servidor B não conseguirá ler esse token, pois a chave geradora é
+    diferente. Sendo assim, é necessário um local único para armazenar as chaves. No exemplo, foi criado um diretório em 
+    `/var/data_protection_keys`. Após configurar esse diretório, é necessário na `Program.cs`:
+    ```c#
+        // Salva em um diretório as chaves de proteção de dados, para serem compartilhadas entre múltiplas instâncias da aplicação.
+        builder.Services.AddDataProtection()
+            .PersistKeysToFileSystem(new DirectoryInfo(@"/var/data_protection_keys/"))
+            .SetApplicationName("MinhaAPPMVC");
+    ```
+
+    
+    
+
 
 # Referências
 

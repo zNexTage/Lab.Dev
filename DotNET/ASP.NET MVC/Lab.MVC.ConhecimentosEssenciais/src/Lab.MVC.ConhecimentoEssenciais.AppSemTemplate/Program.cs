@@ -1,7 +1,9 @@
-﻿using Lab.MVC.AppSemTemplate.Data;
+﻿using Lab.MVC.AppSemTemplate.Configuration;
+using Lab.MVC.AppSemTemplate.Data;
 using Lab.MVC.AppSemTemplate.Extensions;
 using Lab.MVC.AppSemTemplate.Services;
 using Lab.MVC.AppSemTemplate.Services.Contracts;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,6 +25,10 @@ builder.Services.AddResponseCaching();
 
 builder.Services.AddControllersWithViews(); // Configuração mais simples que o AddMVC
 
+// Salva em um diretório as chaves de proteção de dados, para serem compartilhadas entre múltiplas instâncias da aplicação.
+builder.Services.AddDataProtection()
+.PersistKeysToFileSystem(new DirectoryInfo(@"/var/data_protection_keys/"))
+.SetApplicationName("MinhaAPPMVC");
 
 builder.Services.Configure<CookiePolicyOptions>(opts =>
 {
@@ -74,6 +80,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}"
 );
 
-
+DbMigrationHelper.EnsureSeedData(app).Wait();
 
 app.Run();
