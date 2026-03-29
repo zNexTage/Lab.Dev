@@ -1,14 +1,13 @@
 ﻿using Features.Clientes;
-using Lab.Dev.Features.Tests.Fixtures;
 
-namespace Lab.Dev.Features.Tests.Traits
+namespace Lab.Dev.Features.Tests.Fixtures
 {
     [Collection(nameof(ClienteCollection))]
-    public class ClienteTests
+    public class ClienteFixturesTest
     {
         readonly ClienteTestsFixtures _clienteTestsFixture;
 
-        public ClienteTests(ClienteTestsFixtures clienteTestsFixtures)
+        public ClienteFixturesTest(ClienteTestsFixtures clienteTestsFixtures)
         {
             _clienteTestsFixture = clienteTestsFixtures;
         }
