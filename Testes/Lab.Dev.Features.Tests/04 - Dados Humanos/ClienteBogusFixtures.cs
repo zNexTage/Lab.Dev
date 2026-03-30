@@ -39,6 +39,38 @@ namespace Lab.Dev.Features.Tests.DadosHumanos
             return cliente;
         }
 
+        public IEnumerable<Cliente> GerarClientesValidos(int quantidade, bool ativo)
+        {
+            var genero = new Faker().PickRandom<Name.Gender>();
+
+            var clientes = new Faker<Cliente>("pt_BR")
+                .CustomInstantiator(f =>
+                new Cliente(
+                    Guid.NewGuid(),
+                    f.Name.FirstName(genero),
+                    f.Name.LastName(genero),
+                    f.Date.Past(80, DateTime.Now.AddYears(-18)),
+                    "",
+                    ativo,
+                    DateTime.Now
+                ))
+                // Define o email por fora apenas para utilizar o 
+                // primeiro e segundo nome.
+                .RuleFor(c => c.Email, (f, c) => f.Internet.Email(c.Nome.ToLower(), c.Sobrenome.ToLower()));
+
+            return clientes.Generate(quantidade);
+        }
+
+        public IEnumerable<Cliente> ObterClientesVariados()
+        {
+            var clientes = new List<Cliente>();
+
+            clientes.AddRange(GerarClientesValidos(50, true));
+            clientes.AddRange(GerarClientesValidos(50, false));
+
+            return clientes;
+        }
+
         public Cliente GerarClienteInvalido()
         {
             var genero = new Faker().PickRandom<Name.Gender>();
