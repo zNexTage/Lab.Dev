@@ -1,6 +1,7 @@
 ﻿using Bogus;
 using Bogus.DataSets;
 using Features.Clientes;
+using Moq.AutoMock;
 
 namespace Lab.Dev.Features.Tests.DadosHumanos
 {
@@ -95,6 +96,14 @@ namespace Lab.Dev.Features.Tests.DadosHumanos
                 .RuleFor(c => c.Email, (f, c) => f.Internet.Email(c.Nome.ToLower(), c.Sobrenome.ToLower()));
 
             return cliente;
+        }
+
+        public Tuple<ClienteService, AutoMocker> ObterClienteService()
+        {
+            var mocker = new AutoMocker();
+
+            // Para mocker.CreateInstance, precisa ser a classe concreta. Queremos uma instância!!
+            return Tuple.Create(mocker.CreateInstance<ClienteService>(), mocker);
         }
 
         public void Dispose()
