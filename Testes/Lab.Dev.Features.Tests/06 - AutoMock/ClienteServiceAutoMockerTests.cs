@@ -2,7 +2,7 @@
 using Lab.Dev.Features.Tests.DadosHumanos;
 using MediatR;
 using Moq;
-using Moq.AutoMock;
+using Xunit.Abstractions;
 
 namespace Lab.Dev.Features.Tests.AutoMock
 {
@@ -10,10 +10,12 @@ namespace Lab.Dev.Features.Tests.AutoMock
     public class ClienteServiceAutoMockerTests
     {
         readonly ClienteBogusFixtures _clienteFixtures;
+        readonly ITestOutputHelper _outputHelper;
 
-        public ClienteServiceAutoMockerTests(ClienteBogusFixtures clienteFixtures)
+        public ClienteServiceAutoMockerTests(ClienteBogusFixtures clienteFixtures, ITestOutputHelper outputHelper)
         {
             _clienteFixtures = clienteFixtures;
+            _outputHelper = outputHelper;
         }
 
 
@@ -52,6 +54,9 @@ namespace Lab.Dev.Features.Tests.AutoMock
             Assert.False(cliente.EhValido());
             mocker.GetMock<IClienteRepository>().Verify(r => r.Adicionar(cliente), Times.Never);
             mocker.GetMock<IMediator>().Verify(m => m.Publish(It.IsAny<INotification>(), CancellationToken.None), Times.Never);
+
+            // Equivalente a um Console.WriteLine
+            _outputHelper.WriteLine($"Foram encontrados {cliente.ValidationResult.Errors.Count} erro(s) nesta validação.");
         }
 
         [Fact(DisplayName = "Obter Clientes Ativos")]
@@ -73,6 +78,8 @@ namespace Lab.Dev.Features.Tests.AutoMock
                 .Verify(r => r.ObterTodos(), Times.Once);
             Assert.True(clientes.Any());
             Assert.DoesNotContain(clientes, c => !c.Ativo);
+
+            
         }
     }
 }
