@@ -19,3 +19,7 @@
 
 - Utilizado pelo time de desenvolvimento do .NET Core e ASP.NET;
 - Instalação: `Install-Package Moq`;
+
+# Code Coverage
+
+- OpenCover
