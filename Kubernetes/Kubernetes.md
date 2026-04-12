@@ -1,5 +1,7 @@
 # Kubernetes
 
+![alt text](01_Kubernetes.png)
+
 ## Cluster
 "guarda-chuva" de tudo — toda a infraestrutura do Kubernetes vive dentro dele. Você interage com o cluster como se fosse uma única entidade, mesmo que ele tenha dezenas de servidores por baixo.
 
